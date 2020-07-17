@@ -1,0 +1,21 @@
+.wrapper {
+  width: 80%;
+  margin: auto;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  flex: 1;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  color: red;
+}
