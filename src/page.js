@@ -12,14 +12,18 @@ const generateTopMenu = function() {
     <h1>Bookmarks</h1>
     <form>
       <div class="group">
-        <button type="submit" class="reveal-add">Add</button>
-        <select>
-          <option value="something">Option 1<option>
+        <button type="submit" class="filter">Filter by Importance</button>
+        <select class="bookmark-importance">
+          <option value="1">1 Star</option>
+          <option value="2">2 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="5">5 Stars</option>
         </select>
       </div>
     </form>
-    <form>
-      <div class="hidden group">
+    <form class="wrapper">
+      <div class="group add-area">
         <label for="title">Title:</label>
           <input type="text" name="title" class="title" required></input>
         <label for="url">URL:</label>
@@ -53,18 +57,29 @@ const generateStars = function (numStars) {
 
 const generateBookmarkItem = function (bookmark) {
   return $(`
-    <li class="item">
+    <li class="item" id=${bookmark.id}>
       <div class="group">
         <h3 class="inline-block item">${bookmark.title}</h3>
         <p class="inline-block item">${generateStars(bookmark.rating)}</p>
+        <div class="hiddennnn group">
+          <a href=${bookmark.url}>Visit Site</a>
+          <p>${bookmark.desc}</p>
+          <button type="submit" class="remove">Remove</button>
+        </div>
       </div>
-      <a href=${bookmark.url}>Visit Site</a>
-      <p>${bookmark.desc}</p>
     </li>
   `);
 }
 
 // EVENT HANDLER FUNCTIONS
+
+const handleFilter = function () {
+  $('header').on('click', '.filter', function(evt) {
+    evt.preventDefault();
+    console.log($('.bookmark-importance').val());
+    renderConditionally($('.bookmark-importance').val());
+  })
+}
 
 const handleAddNewBookmark = function () {
   $('header').on('click', '.add-new', function(evt) {
@@ -89,23 +104,54 @@ const handleAddNewBookmark = function () {
   });
 }
 
-const bindEventListeners = function () {
-  handleAddNewBookmark();
+const handleDeleteBookmark = function () {
+  $('main').on('click', '.remove', function(evt) {
+    evt.preventDefault();
+
+    let currentID = $(this).closest('li').attr('id');
+
+    api.deleteBookmark(currentID)
+      .then(response => response.json())
+      .then(response => {
+        store.removeBookmark(currentID);
+        render();
+      })
+  })
 }
 
-// RENDER FUNCTION
+const bindEventListeners = function () {
+  handleAddNewBookmark();
+  handleFilter();
+  handleDeleteBookmark();
+}
+
+// RENDER FUNCTIONS
+
+const renderConditionally = function (rating) {
+  for (let i = 0; i < store.bookmarks.length; i++) {
+    if (store.bookmarks[i] < rating) {
+      $(`#${store.bookmarks.id}`).hide();
+    } else {
+      $(`#${store.bookmarks.id}`).show();
+    }
+  }
+}
+
+const renderHeader = function () {
+  const headerObj = generateTopMenu();
+  $('header').html(headerObj);
+}
 
 const render = function() {
-  const headerObj = generateTopMenu();
+  $('main ul').empty();
 
   for (let i = 0; i < store.bookmarks.length; i++) {
     $('main ul').append(generateBookmarkItem(store.bookmarks[i]));
   }
-
-  $('header').html(headerObj);
 }
 
 export default {
   render,
+  renderHeader,
   bindEventListeners
 }

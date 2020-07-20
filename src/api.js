@@ -23,7 +23,12 @@ const addBookmark = function(title, url, desc, rating=5) {
   return fetch(`${BASE_URL}`, options);
 }
 
+const deleteBookmark = function(id) {
+  return fetch(`${BASE_URL}/${id}`, {method: 'DELETE'});
+}
+
 export default {
   getBookmarks,
-  addBookmark
+  addBookmark,
+  deleteBookmark
 }

@@ -1,0 +1,69 @@
+/* GENERAL CLASSES */
+
+.wrapper {
+  width: 80%;
+  margin: auto;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+}
+
+.item {
+  flex: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+/* GENERAL STYLING */
+
+h1 {
+  padding: 0;
+  text-align: center;
+}
+
+h3 {
+  text-align: center;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  margin-top: 12px;
+}
+
+li {
+  padding: 0;
+  display: flex;
+  background-color: #ccc;
+  border: 2px solid #222;
+  justify-content: center;
+  width: 50%;
+  margin: 6px;
+}
+
+.remove {
+  margin: 6px;
+}
