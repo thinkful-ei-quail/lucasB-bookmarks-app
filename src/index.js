@@ -8,18 +8,21 @@ import api from './api';
 
 import './style.css';
 
-const main = async function() {
-  await api.getBookmarks()
+const main = function() {
+  api.getBookmarks()
     .then(response => response.json())
     .then(response => {
-      for (let i = 0; i < response.length; i++) {
-        store.setBookmarks(response);
-      }
+      store.setBookmarks(response);
     })
+    .finally(response => {
+      store.initializeExpanded(store.bookmarks);
   
-  page.renderHeader();
-  page.render();
-  page.bindEventListeners();
+      page.renderHeader();
+      page.render();
+      page.bindEventListeners();
+
+      console.log(store.bookmarks);
+    })
 };
 
 $(main);

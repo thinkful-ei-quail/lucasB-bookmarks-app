@@ -31,7 +31,13 @@ const generateTopMenu = function() {
         <label for="desc">Description:</label>
           <input type="text" name="desc" class="desc"></input>
         <label for="rating">Rating:</label>
-          <input type="number" name="rating" class="rating"></input>
+          <select name="rating" class="rating">
+            <option value="1">1 Star</option>
+            <option value="2">2 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="5">5 Stars</option>
+          </select>
         <button type="submit" class="add-new">Add New Bookmark</button>
       </div>
     </form>
@@ -61,7 +67,7 @@ const generateBookmarkItem = function (bookmark) {
       <div class="group">
         <h3 class="inline-block item">${bookmark.title}</h3>
         <p class="inline-block item">${generateStars(bookmark.rating)}</p>
-        <div class="hiddennnn group">
+        <div class="hidden group">
           <a href=${bookmark.url}>Visit Site</a>
           <p>${bookmark.desc}</p>
           <button type="submit" class="remove">Remove</button>
@@ -93,12 +99,11 @@ const handleAddNewBookmark = function () {
     $('.title').empty();
     $('.url').empty();
     $('.desc').empty();
-    $('.rating').empty();
 
     api.addBookmark(title, url, desc, rating)
       .then(response => response.json())
       .then(response => {
-        store.addNewBookmark(response);
+        store.addNewBookmark(store.bookmarks, response);
         render();
       })
   });
@@ -113,9 +118,23 @@ const handleDeleteBookmark = function () {
     api.deleteBookmark(currentID)
       .then(response => response.json())
       .then(response => {
-        store.removeBookmark(currentID);
+        store.removeBookmark(store.bookmarks, currentID);
         render();
       })
+  })
+}
+
+const handleExpandDetails = function ()  {
+  $('main').on('click', 'li', function(evt) {
+    let currentID = $(this).closest('li').attr('id');
+
+    if (store.getIsExpanded(currentID)) {
+      $(this).find('.hidden').css('display', 'block');
+      store.updateExpanded(currentID);
+    } else {
+      $(this).find('.hidden').css('display', 'none');
+      store.updateExpanded(currentID);
+    }
   })
 }
 
@@ -123,16 +142,18 @@ const bindEventListeners = function () {
   handleAddNewBookmark();
   handleFilter();
   handleDeleteBookmark();
+  handleExpandDetails();
 }
 
 // RENDER FUNCTIONS
 
 const renderConditionally = function (rating) {
   for (let i = 0; i < store.bookmarks.length; i++) {
-    if (store.bookmarks[i] < rating) {
-      $(`#${store.bookmarks.id}`).hide();
+    // console.log($(`#${store.bookmarks[i].id}`).css('display', 'none'));
+    if (store.bookmarks[i].rating < rating) {
+      $(`#${store.bookmarks[i].id}`).css('display', 'none');
     } else {
-      $(`#${store.bookmarks.id}`).show();
+      $(`#${store.bookmarks[i].id}`).css('display', 'block');
     }
   }
 }
