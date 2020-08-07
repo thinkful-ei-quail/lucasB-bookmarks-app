@@ -2,9 +2,9 @@
 
 import $ from 'jquery';
 
-import page from './src/page';
-import store from './src/store';
-import api from './src/api';
+import page from './page';
+import store from './store';
+import api from './api';
 
 import './style.css';
 
