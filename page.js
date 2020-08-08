@@ -96,16 +96,30 @@ const handleAddNewBookmark = function () {
     const desc = $('.desc').val();
     const rating = $('.rating').val();
 
-    $('.title').empty();
-    $('.url').empty();
-    $('.desc').empty();
+    try {
+      validateInput(title, url);
 
-    api.addBookmark(title, url, desc, rating)
-      .then(response => response.json())
+      api.addBookmark(title, url, desc, rating)
+      .then(response => {
+        if(response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error adding bookmark, please try again');
+        }
+      })
       .then(response => {
         store.addNewBookmark(store.bookmarks, response);
         render();
       })
+    }
+    catch (e) {
+      alert(e.message);
+    }
+    finally {
+      $('.title').empty();
+      $('.url').empty();
+      $('.desc').empty();
+    }
   });
 }
 
@@ -116,11 +130,12 @@ const handleDeleteBookmark = function () {
     let currentID = $(this).closest('li').attr('id');
 
     api.deleteBookmark(currentID)
-      .then(response => response.json())
+      .then(response => response.ok ? response.json() : new Error('Error deleting bookmark, please try again'))
       .then(response => {
         store.removeBookmark(store.bookmarks, currentID);
         render();
       })
+      .catch(e => alert(e.message))
   })
 }
 
@@ -145,11 +160,21 @@ const bindEventListeners = function () {
   handleExpandDetails();
 }
 
+// INPUT VALIDATOR
+
+const validateInput = function (title, url) {
+  if (title.length === 0) {
+    throw new Error('Title cannot be empty');
+  }
+  if (!url.match(/^(http|https):\/\/[^ "]+$/)) {
+    throw new Error('URL must begin with http:// or https://');
+  }
+}
+
 // RENDER FUNCTIONS
 
 const renderConditionally = function (rating) {
   for (let i = 0; i < store.bookmarks.length; i++) {
-    // console.log($(`#${store.bookmarks[i].id}`).css('display', 'none'));
     if (store.bookmarks[i].rating < rating) {
       $(`#${store.bookmarks[i].id}`).css('display', 'none');
     } else {
