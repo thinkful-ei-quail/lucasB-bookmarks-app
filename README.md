@@ -1,3 +1,14 @@
+# OVERVIEW
+
+This app was created as a demonstration of jQuery in accordance with the 
+Bookmark App Project requirements. The app allows a user to add bookmarks
+using an API, remove bookmarks they no longer need, and visit the sites of the
+bookmarks they create.
+
+## LIVE LINK
+
+https://thinkful-ei-quail.github.io/lucasB-bookmarks-app/
+
 ## USER STORIES
 
 I can add bookmarks to my bookmark list. Bookmarks contain:
@@ -19,5 +30,3 @@ I receive appropriate feedback when I cannot submit a bookmark
 
 Check all validations in the API documentation (e.g. title and url field required)
 I can select from a dropdown (a <select> element) a "minimum rating" to filter the list by all bookmarks rated at or above the chosen selection
-
-(Extension feature - optional) I can edit the rating and description of a bookmark in my list
