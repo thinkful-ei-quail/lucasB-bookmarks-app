@@ -10,35 +10,35 @@ import api from './api';
 const generateTopMenu = function() {
   return $(`
     <h1>Bookmarks</h1>
-    <form>
-      <div class="group">
-        <button type="submit" class="filter">Filter by Importance</button>
-        <select class="bookmark-importance">
+    <form class="wrapper group">
+      <div class="group filter">
+        <select class="bookmark-importance item">
           <option value="1">1 Star</option>
           <option value="2">2 Stars</option>
           <option value="3">3 Stars</option>
           <option value="4">4 Stars</option>
           <option value="5">5 Stars</option>
         </select>
+        <button type="submit" class="filter-btn item">Filter by Importance</button>
       </div>
     </form>
     <form class="wrapper">
       <div class="group add-area">
         <label for="title">Title:</label>
-          <input type="text" name="title" class="title" required></input>
+          <input id="title" type="text" name="title" class="title item form-item" required></input>
         <label for="url">URL:</label>
-          <input type="text" name="url" class="url" placeholder="http(s)://" required></input>
+          <input id="url" type="text" name="url" class="url item form-item" placeholder="http(s)://" required></input>
         <label for="desc">Description:</label>
-          <input type="text" name="desc" class="desc"></input>
+          <input id="desc" type="text" name="desc" class="desc item form-item"></input>
         <label for="rating">Rating:</label>
-          <select name="rating" class="rating">
+          <select id="rating" name="rating" class="rating item form-item">
             <option value="1">1 Star</option>
             <option value="2">2 Stars</option>
             <option value="3">3 Stars</option>
             <option value="4">4 Stars</option>
             <option value="5">5 Stars</option>
           </select>
-        <button type="submit" class="add-new">Add New Bookmark</button>
+        <button type="submit" class="add-new item">Add New Bookmark</button>
       </div>
     </form>
   `);
@@ -63,11 +63,11 @@ const generateStars = function (numStars) {
 
 const generateBookmarkItem = function (bookmark) {
   return $(`
-    <li class="item" id=${bookmark.id}>
+    <li class="item bookmark" id=${bookmark.id} tabindex="0">
       <div class="group">
         <h3 class="inline-block item">${bookmark.title}</h3>
         <p class="inline-block item">${generateStars(bookmark.rating)}</p>
-        <div class="hidden group">
+        <div class="${bookmark.id} hidden group">
           <a href=${bookmark.url}>Visit Site</a>
           <p>${bookmark.desc}</p>
           <button type="submit" class="remove">Remove</button>
@@ -80,9 +80,8 @@ const generateBookmarkItem = function (bookmark) {
 // EVENT HANDLER FUNCTIONS
 
 const handleFilter = function () {
-  $('header').on('click', '.filter', function(evt) {
+  $('header').on('click', '.filter-btn', function(evt) {
     evt.preventDefault();
-    console.log($('.bookmark-importance').val());
     renderConditionally($('.bookmark-importance').val());
   })
 }
@@ -140,15 +139,16 @@ const handleDeleteBookmark = function () {
 }
 
 const handleExpandDetails = function ()  {
-  $('main').on('click', 'li', function(evt) {
+  $('main').on('click', '.bookmark', function(evt) {
     let currentID = $(this).closest('li').attr('id');
 
-    if (store.getIsExpanded(currentID)) {
-      $(this).find('.hidden').css('display', 'block');
-      store.updateExpanded(currentID);
-    } else {
-      $(this).find('.hidden').css('display', 'none');
-      store.updateExpanded(currentID);
+    store.updateExpanded(currentID);
+
+    renderExpanded($(this), currentID);
+  })
+  $('main').on('keypress', '.bookmark', function(evt) {
+    if (evt.which === 13) {
+        $(this).closest('li').click();
     }
   })
 }
@@ -183,13 +183,23 @@ const renderConditionally = function (rating) {
   }
 }
 
+const renderExpanded = function (jObj, id) {
+  if (store.getIsExpanded(id)) {
+    $(jObj).find('.hidden').css('display', 'block');
+  } else {
+    $(jObj).find('.hidden').css('display', 'none');
+  }
+}
+
 const renderHeader = function () {
   const headerObj = generateTopMenu();
   $('header').html(headerObj);
 }
 
-const render = function() {
-  $('main ul').empty();
+const render = function () {
+  $('main').empty();
+  $('main').append($('<ul></ul>'));
+  $('main ul').addClass('group');
 
   for (let i = 0; i < store.bookmarks.length; i++) {
     $('main ul').append(generateBookmarkItem(store.bookmarks[i]));
